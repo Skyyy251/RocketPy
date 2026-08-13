@@ -6,3 +6,5 @@ requests
 pytz
 simplekml
 dill
+pygeomag
+datetime
