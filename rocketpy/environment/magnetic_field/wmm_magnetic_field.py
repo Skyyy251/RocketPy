@@ -12,8 +12,9 @@ class WMMMagneticField(MagneticFieldModel):
 
     def _to_decimal_year(self, dt):
         year = dt.year
-        start_of_year = datetime(year, 1, 1)
-        next_year = datetime(year + 1, 1, 1)
+        tz_info = dt.tzinfo
+        start_of_year = datetime(year, 1, 1, tzinfo=tz)
+        next_year = datetime(year + 1, 1, 1, tzinfo=tz)
         year_fraction = (dt - start_of_year).total_seconds() / (
             next_year - start_of_year
         ).total_seconds()
