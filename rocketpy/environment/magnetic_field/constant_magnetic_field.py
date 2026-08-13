@@ -4,7 +4,7 @@ from rocketpy.environment.magnetic_field.abstract_magnetic_field import (
 import numpy as np
 
 
-class ConstantMegneticField(MagneticFieldModel):  #
+class ConstantMagneticField(MagneticFieldModel):  #
     """Constant magnetic field model"""
 
     def __init__(self, field):
