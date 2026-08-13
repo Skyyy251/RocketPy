@@ -26,6 +26,6 @@ class WMMMagneticField(MagneticFieldModel):
 
         res = self.gm.calculate(latitude, longitude, alt_km, decimal_year)
 
-        field_vector = np.array([rex.x, res.y, res.z]) * 1e-9
+        field_vector = np.array([res.x, res.y, res.z]) * 1e-9
 
         return field_vector
