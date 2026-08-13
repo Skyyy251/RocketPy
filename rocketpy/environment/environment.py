@@ -48,6 +48,7 @@ from rocketpy.tools import (
     bilinear_interpolation,
     geopotential_height_to_geometric_height,
 )
+from rocketpy.environment.magnetic_field.abstract_magnetic_field import MagneticFieldModel
 
 logger = logging.getLogger(__name__)
 
@@ -356,6 +357,9 @@ class Environment:
 
         # Set the atmosphere model to the standard atmosphere
         self.set_atmospheric_model("standard_atmosphere")
+
+        # Set magnetic field default to None
+        self.magnetic_field = None
 
         # Initialize date, latitude, longitude, and Earth geometry
         self.__initialize_date(date, timezone)
@@ -1177,6 +1181,27 @@ class Environment:
         if input_dict in _pa_files or input_file in _pa_files:
             return 1
         return None
+
+    def set_magnetic_field_model(self, magnetic_field = None):
+        """Sets the Earth's magnetic field model for this Environment.
+
+        Parameters
+        ----------
+        magnetic_field : MagneticFieldModel, optional
+            An instance of a class inheriting from MagneticFieldModel
+            (e.g., WMM or IGRF model) used to calculate the magnetic field
+            vector. If None, the magnetic field is not modeled.
+
+        Returns
+        -------
+        None
+        """
+        if magnetic_field is None:
+            self.magnetic_field = None
+        elif isinstance(magnetic_field, MagneticFieldModel):
+            self.magnetic_field = magnetic_field
+        else:
+            raise TypeError("Parameter 'magnetic_field' must be an instance of MagneticFieldModel.")
 
     def set_atmospheric_model(  # pylint: disable=too-many-statements
         self,
