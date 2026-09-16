@@ -46,6 +46,9 @@ class Magnetometer(InertialSensor):
 
         self.prints = _InertialSensorPrints(self)
         self._debug_calls = []
+        self._debug_orientations = []
+        self._debug_B_inertial = []
+        self._debug_B_sensor = []
 
     def measure(self, time, **kwargs):
         """Measure the Earth's magnetic field.
@@ -86,6 +89,14 @@ class Magnetometer(InertialSensor):
         )
 
         B_sensor = inertial_to_sensor @ B_inertial
+
+        # --- Debug: Orientierung und Felder speichern ---
+
+        R_sensor_to_inertial = inertial_to_sensor.transpose()
+        self._debug_orientations.append((time, np.array(R_sensor_to_inertial)))
+
+        self._debug_B_inertial.append((time, np.array(B_inertial)))
+        self._debug_B_sensor.append((time, np.array(B_sensor)))
 
         # Apply noice
 
