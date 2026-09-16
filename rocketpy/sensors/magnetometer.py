@@ -45,6 +45,7 @@ class Magnetometer(InertialSensor):
         )
 
         self.prints = _InertialSensorPrints(self)
+        self._debug_calls = []
 
     def measure(self, time, **kwargs):
         """Measure the Earth's magnetic field.
@@ -58,6 +59,7 @@ class Magnetometer(InertialSensor):
             u : Rocket state vector
             environment : Environment object
         """
+        self._debug_calls.append(time)
 
         u = kwargs["u"]
         environment = kwargs["environment"]
