@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 from ..mathutils.vector_matrix import Matrix, Vector
 from ..prints.sensors_prints import _InertialSensorPrints
@@ -149,3 +150,48 @@ class Magnetometer(InertialSensor):
             name=data["name"],
             seed=data.get("seed"),
         )
+
+    def plot_debug_axes(self):
+        """Plot sensor axis orientation trajectories in inertial frame and components over time."""
+        times = np.array([t for t, _ in self._debug_orientations])
+        R = np.array([m for _, m in self._debug_orientations])  # shape (N, 3, 3)
+
+        # Spalten = Sensor-Achsen im inertialen Frame
+        x_axis = R[:, :, 0]
+        y_axis = R[:, :, 1]
+        z_axis = R[:, :, 2]
+
+        # --- 3D-Trajektorie der Achsen-Spitzen ---
+        fig = plt.figure(figsize=(10, 10))
+        ax = fig.add_subplot(111, projection="3d")
+        ax.plot(x_axis[:, 0], x_axis[:, 1], x_axis[:, 2], label="Sensor x", color="r")
+        ax.plot(y_axis[:, 0], y_axis[:, 1], y_axis[:, 2], label="Sensor y", color="g")
+        ax.plot(z_axis[:, 0], z_axis[:, 1], z_axis[:, 2], label="Sensor z", color="b")
+
+        # Start- und Endpunkte markieren
+        for ax_arr, color in [(x_axis, "r"), (y_axis, "g"), (z_axis, "b")]:
+            ax.scatter(*ax_arr[0], color=color, marker="o", s=60)
+            ax.scatter(*ax_arr[-1], color=color, marker="*", s=120)
+
+        ax.set_xlabel("X_inertial")
+        ax.set_ylabel("Y_inertial")
+        ax.set_zlabel("Z_inertial")
+        ax.set_title(f"{self.name} Sensorachsen im inertialen Frame")
+        ax.legend()
+        ax.set_box_aspect([1, 1, 1])
+        plt.tight_layout()
+        plt.show()
+
+        # --- 2D: Achsenkomponenten über Zeit ---
+        fig, axes = plt.subplots(3, 1, figsize=(11, 9), sharex=True)
+        for ax_i, axis, name in zip(axes, [x_axis, y_axis, z_axis], ["x", "y", "z"]):
+            ax_i.plot(times, axis[:, 0], label=f"{name}·X_inertial")
+            ax_i.plot(times, axis[:, 1], label=f"{name}·Y_inertial")
+            ax_i.plot(times, axis[:, 2], label=f"{name}·Z_inertial")
+            ax_i.set_ylabel(f"Sensor-{name}-Achse")
+            ax_i.grid(True, ls="--", alpha=0.5)
+            ax_i.legend(loc="best", ncol=3, fontsize=9)
+        axes[-1].set_xlabel("Time [s]")
+        fig.suptitle(f"{self.name} Sensorachsen-Komponenten")
+        plt.tight_layout()
+        plt.show()
