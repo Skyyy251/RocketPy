@@ -90,13 +90,23 @@ class Magnetometer(InertialSensor):
 
         B_sensor = inertial_to_sensor @ B_inertial
 
-        # --- Debug: Orientierung und Felder speichern ---
+        def _mat_to_np(M):
+            return np.array(
+                [[M.xx, M.xy, M.xz], [M.yx, M.yy, M.yz], [M.zx, M.zy, M.zz]],
+                dtype=float,
+            )
 
-        R_sensor_to_inertial = inertial_to_sensor.transpose()
-        self._debug_orientations.append((time, np.array(R_sensor_to_inertial)))
+        # Vektoren: 3x1 -> numpy
+        def _vec_to_np(v):
+            return np.array([v[0], v[1], v[2]], dtype=float)
 
-        self._debug_B_inertial.append((time, np.array(B_inertial)))
-        self._debug_B_sensor.append((time, np.array(B_sensor)))
+        # Debug
+        R_inertial_to_sensor = _mat_to_np(inertial_to_sensor)
+        R_sensor_to_inertial = R_inertial_to_sensor.T  # numpy-Transpose, safe
+
+        self._debug_orientations.append((time, R_sensor_to_inertial))
+        self._debug_B_inertial.append((time, _vec_to_np(B_inertial)))
+        self._debug_B_sensor.append((time, _vec_to_np(B_sensor)))
 
         # Apply noice
 
