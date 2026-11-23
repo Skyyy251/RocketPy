@@ -26,6 +26,8 @@ class WMMMagneticField(MagneticFieldModel):
 
         res = self.gm.calculate(latitude, longitude, alt_km, decimal_year)
 
-        field_vector = np.array([res.x, res.y, res.z]) * 1e-9
+        # pygeomag returns North, East, Down (NED); RocketPy's inertial frame
+        # is East, North, Up (ENU) -- reorder and flip the vertical sign.
+        field_vector = np.array([res.y, res.x, -res.z]) * 1e-9
 
         return field_vector

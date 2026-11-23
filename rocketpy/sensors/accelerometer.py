@@ -232,7 +232,10 @@ class Accelerometer(InertialSensor):
         gravity = (
             Vector([0, 0, -gravity]) if self.consider_gravity else Vector([0, 0, 0])
         )
-        inertial_acceleration = Vector(u_dot[3:6]) + gravity
+        # Specific force = true acceleration minus gravity vector, so a
+        # stationary sensor reads +g on its upward axis (what real
+        # accelerometers measure), not -g.
+        inertial_acceleration = Vector(u_dot[3:6]) - gravity
 
         # Vector from rocket cdm to sensor in rocket frame
         r = relative_position
